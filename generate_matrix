@@ -1,0 +1,26 @@
+#!/bin/bash
+
+NAME=$1
+#FILE_DIR=$( cd ${0%/*} && pwd -P)
+mkdir -p output_results/
+
+# creating a file of all the genes and clustering it with cd-hit-est
+ALLGENES=output_results/all_genes_${NAME}
+ls *.ffn > output_results/sample_list.txt
+
+sed -i "s/.ffn//g" output_results/sample_list.txt
+
+cat *.ffn > ${ALLGENES}
+
+sed -i "s/ /_/g" ${ALLGENES}
+
+CLUSTERED=output_results/clustered_genes_${NAME}.ffn
+
+cd-hit-est -T 12 -i ${ALLGENES} -o ${CLUSTERED} -M 0 -G 0 -d 200 -aS 0.8 -c 0.90
+
+rm -f output_results/all_genes_${NAME}
+
+# blast each sequence to the clustered database
+gene_db_alignment_against_seq.sh  ${NAME}
+
+convert_gene_alignment_to_binary.sh  ${NAME}
