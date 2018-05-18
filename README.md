@@ -30,7 +30,7 @@ source ~/.bash
 ```
 
 To run the program move to the folder where the output files should be produced and run:
-```shell
+```
 GenMat [chosen name for the analysis]
 ```
 
