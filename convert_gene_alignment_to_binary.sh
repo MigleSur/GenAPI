@@ -50,3 +50,4 @@ rm -f tmp_column_*.txt
 rm -f output_results/sample_list.txt
 rm -f clustered_noshort_${NAME}
 rm -f temp_variable_genes
+rm -rf output_results/sample_blast_results
