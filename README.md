@@ -14,10 +14,26 @@ Before running the program make sure that the following programs are installed a
 
 ### Installation
 
-Clone the repository
+Clone the repository:
 ```shell
 git clone https://github.com/MigleSur/GenMat.git
 ```
+
+Add the following line to your .bashrc (if the GenMat is located in a different directory than /bin/bash, use the path to that directory):
+```shell
+export PATH=$PATH:/usr/bin/GenMat
+```
+
+Reload the .bashrc file by running:
+```shell
+source ~/.bash
+```
+
+To run the program move to the folder where the output files should be produced and run:
+```shell
+GenMat [chosen name for the analysis]
+```
+
 ### Input
 ### Output
 ### Contact
