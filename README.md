@@ -11,6 +11,7 @@ Initially the program was written as an alternative for [Roary](http://sanger-pa
 Before running the program make sure that the following programs are installed and added to the path: <br/>
 [BLAST 2.6.0+](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) <br/>
 [CD-HIT 4.6.1](http://weizhongli-lab.org/cd-hit/) <br/>
+[Bedtools 2.26](http://bedtools.readthedocs.io/en/latest/) <br/>
 
 ### Installation
 
@@ -36,7 +37,9 @@ GenMat [chosen name for the analysis]
 
 ### Input
 
-FASTA contig/scaffold files and annotated nucleotide FASTA files (.fna) of the files of interest have to be placed in the directory from which the program is being run. 
+Annotated contig/scaffold GFF files of the chosen samples have to be placed in the directory from which the program is being run. 
+
+### Options
 
 ### Output
 
