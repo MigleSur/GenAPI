@@ -54,7 +54,7 @@ CLUSTERED=output_results/clustered_genes_${NAME}.ffn
 
 echo -en "-----CLUSTERING WITH CD-HIT-EST-----\n"
 
-cd-hit-est -i ${ALLGENES} -o ${CLUSTERED} -M 0 -G 0 -d 200 -aS 0.8 -c 0.90
+cd-hit-est -T 12 -i ${ALLGENES} -o ${CLUSTERED} -M 0 -G 0 -d 200 -aS 0.8 -c 0.90
 
 rm -f output_results/all_genes_${NAME}
 

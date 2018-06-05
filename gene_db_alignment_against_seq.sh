@@ -5,7 +5,7 @@ NAME=$1
 
 grep ">" output_results/clustered_genes_${NAME}.ffn | awk '{print substr($0, 2,1000)}'> tmp_genelist
 
-cat output_results/clustered_genes_${NAME}.ffn | awk '$0 ~ ">" {print c; c=0; printf substr($0,2,1000) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; } ' > tmp_genelength
+cat output_results/clustered_genes_${NAME}.ffn | awk '$0 ~ ">" {print c; c=0; printf substr($0,2,1000) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; } ' | sed '/^\s*$/d' > tmp_genelength
 
 mkdir -p output_results/sample_gene_stats
 
