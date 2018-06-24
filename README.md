@@ -9,9 +9,9 @@ Initially the program was written as an alternative for [Roary](http://sanger-pa
 ### Versions of software it was tested against
 
 Before running the program make sure that the following programs are installed and added to the path: <br/>
-[BLAST 2.6.0+](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) <br/>
-[CD-HIT 4.6.1](http://weizhongli-lab.org/cd-hit/) <br/>
-[Bedtools 2.26](http://bedtools.readthedocs.io/en/latest/) <br/>
+[BLAST >=2.6.0+](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) <br/>
+[CD-HIT >=4.6.1](http://weizhongli-lab.org/cd-hit/) <br/>
+[Bedtools >=2.26](http://bedtools.readthedocs.io/en/latest/) <br/>
 
 ### Installation
 
@@ -27,7 +27,7 @@ export PATH=$PATH:/usr/bin/GenMat
 
 Reload the .bashrc file by running:
 ```shell
-source ~/.bash
+source ~/.bashrc
 ```
 
 To run the program move to the folder where the output files should be produced and run:
@@ -49,9 +49,9 @@ Output file name | Description
 ------------ | -------------
 clustered_genes_[name].ffn | Pan-genome nucleotide sequences file
 gene_presence_absence_[name].txt | Tab seperated gene presence/absence table file
-sample_gene_status | Each sample's best blast alignment statistics for all the pan-genome genes
+sample_gene_stats | Each sample's best blast alignment statistics for all the pan-genome genes
 
 ### Author
 
-Migle Gabrielaite | survilaite.migle@gmail.com
+Migle Gabrielaite | migle.gabrielaite@gmail.com
 
