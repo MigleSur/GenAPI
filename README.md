@@ -39,7 +39,32 @@ GenMat [chosen name for the analysis]
 
 Annotated contig/scaffold GFF files of the chosen samples have to be placed in the directory from which the program is being run. 
 
-### Options
+### Usage
+
+Usage: GenMat [options] [--name <analysis name>]
+
+        -n, --name      Chosen analysis name.
+                        Default: date in yyyy-mm-dd format
+        -p, --threads   Number of threads used for running the analysis.
+                        Default: 1
+        -a, --coverage  Alignment coverage for the shorter sequence for CD-HIT-EST.
+                        Default: 0.8
+        -c, --identity  Sequence identity threshold for CD-HIT-EST.
+                        Default: 0.9
+        -x, --geneCov1  First minimum alignment length threshold.
+                        Default: 0.25
+        -y, --geneCov2  Second minimum alignment length threshold.
+        2                Default: 0.50
+        -w, --geneIden1 First minimum gene identity threshold.
+                        Default: 0.98
+        -z, --geneIden2 Second minimum gene identity threshold.
+                        Default: 0.90
+        -l, --geneLen   Minimum gene length. Shorter than the threshold genes are
+                        excluded from the analysis.
+                        Default: 150
+        -v, --version   Print the tool version.
+        -h, --help      Print this message.
+
 
 ### Output
 
