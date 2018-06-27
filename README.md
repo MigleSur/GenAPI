@@ -32,7 +32,7 @@ source ~/.bashrc
 
 To run the program move to the folder where the output files should be produced and run:
 ```
-GenMat [chosen name for the analysis]
+GenMat [options] [-n <analysis name>]
 ```
 
 ### Input
@@ -54,7 +54,7 @@ Usage: GenMat [options] [--name <analysis name>]
         -x, --geneCov1  First minimum alignment length threshold.
                         Default: 0.25
         -y, --geneCov2  Second minimum alignment length threshold.
-        2                Default: 0.50
+        2               Default: 0.50
         -w, --geneIden1 First minimum gene identity threshold.
                         Default: 0.98
         -z, --geneIden2 Second minimum gene identity threshold.
