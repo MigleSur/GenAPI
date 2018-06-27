@@ -41,6 +41,7 @@ Annotated contig/scaffold GFF files of the chosen samples have to be placed in t
 
 ### Usage
 
+```
 Usage: GenMat [options] [--name <analysis name>]
 
         -n, --name      Chosen analysis name.
@@ -54,7 +55,7 @@ Usage: GenMat [options] [--name <analysis name>]
         -x, --geneCov1  First minimum alignment length threshold.
                         Default: 0.25
         -y, --geneCov2  Second minimum alignment length threshold.
-        2               Default: 0.50
+                        Default: 0.50
         -w, --geneIden1 First minimum gene identity threshold.
                         Default: 0.98
         -z, --geneIden2 Second minimum gene identity threshold.
@@ -64,7 +65,8 @@ Usage: GenMat [options] [--name <analysis name>]
                         Default: 150
         -v, --version   Print the tool version.
         -h, --help      Print this message.
-
+```
+First minimum alignment length threshold and minimum identity threshold are used as a pair. The same goes for the second pair. It is not advised to change those arguments unless there is a strong reason for doing that.
 
 ### Output
 
