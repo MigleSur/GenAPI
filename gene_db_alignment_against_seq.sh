@@ -1,6 +1,10 @@
 #!/bin/bash
 
 NAME=$1
+geneCov1=$2
+geneCov2=$3
+geneIden1=$4
+geneIden2=$5
 
 
 grep ">" output_results/clustered_genes_${NAME}.ffn | awk '{print substr($0, 2,1000)}'> tmp_genelist
@@ -57,20 +61,20 @@ do
 	
 		overlap_interval=`echo "$max_end-$min_start+1" | bc`
 		nonoverlap_interval=`echo "($alignmentlen_first+$alignmentlen_second)" | bc`
-		# if one of the alignments have the same e-value as the best one and is at least 25% of the gene length and 98% of identity or is 50% of the gene length and 90% of identity
+		# if one of the alignments have the same e-value as the best one and is at least cov1 (25%) of the gene length and iden1 (98%) of identity or is  cov2 (50%) of the gene length and iden2 (90%) of identity
 		
 		first_alignment_evalue=`awk '{print $11}'<<< ${alignment_first}`
-		best_alignment1=`awk -v var1=$first_alignment_evalue -v var2=$LEN '$11==var1 && $3>=98.0 && $4>=var2*0.25' tmp_all_headline | tail -1`
-		best_alignment2=`awk -v var1=$first_alignment_evalue -v var2=$LEN '$11==var1 && $3>=90.0 && $4>=var2*0.50' tmp_all_headline | tail -1`
+		best_alignment1=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov1=$geneCov1 -v iden1=$geneIden1 '$11==var1 && $3>=iden1 && $4>=var2*cov1' tmp_all_headline | tail -1`
+		best_alignment2=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov2=$geneCov2 -v iden2=$geneIden2 '$11==var1 && $3>=iden2 && $4>=var2*cov2' tmp_all_headline | tail -1`
 			
-		# checking if at least one of the alignments with the lowest e-value have >=98% identity and >=25% coverage
+		# checking if at least one of the alignments with the lowest e-value have iden1 (>=98%) identity and cov1 (>=25%) coverage
 		if [[ -n $best_alignment1 ]]
 		then
 			ALIGN=`awk '{print $4}' <<< ${best_alignment1}`
 			PERCENT=`awk '{print $3}' <<< ${best_alignment1}`
 			FRACTION=`awk -v var1=$LEN '{print $4/var1}' <<< ${best_alignment1}`
 			AAA="1"
-		# checking if at least one of the alignments with the lowest e-value have >=90% identity and >=50% coverage
+		# checking if at least one of the alignments with the lowest e-value have iden2 (>=90%) identity and cov2 (>=50%) coverage
 		elif [[ -n $best_alignment2 ]]
 		then
 			ALIGN=`awk '{print $4}' <<< ${best_alignment2}`
@@ -114,7 +118,7 @@ do
 		fi
 		
 		# define the variable gene
-		if (( $(echo "scale=4;$FRACTION>=0.25" | bc) )) && (( $(echo "scale=4;$PERCENT>=98" | bc) )) ||  (( $(echo "scale=4;$FRACTION>=0.5" | bc) )) && (( $(echo "scale=4;$PERCENT>=90" | bc) )) 
+		if (( $(echo "scale=4;$FRACTION>=$geneCov1" | bc) )) && (( $(echo "scale=4;$PERCENT>=$geneIden1" | bc) )) ||  (( $(echo "scale=4;$FRACTION>=$geneCov2" | bc) )) && (( $(echo "scale=4;$PERCENT>=$geneIden2" | bc) )) 
 		then
 			VARGENE=0
 		else
