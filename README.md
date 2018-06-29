@@ -22,7 +22,7 @@ git clone https://github.com/MigleSur/GenAPI.git
 
 Add the following line to your .bashrc (if the GenAPI is located in a different directory than /bin/bash, use the path to that directory):
 ```shell
-export PATH=$PATH:/usr/bin/genapi
+export PATH=$PATH:/usr/bin/GenAPI
 ```
 
 Reload the .bashrc file by running:
