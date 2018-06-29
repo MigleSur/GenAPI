@@ -1,6 +1,6 @@
-# GenMat
+# GenAPI
 
-GenMat is a program for gene presence absence table generation for series of closely related bacterial genomes from annotated FASTA file. For genome annotation [prokka](https://github.com/tseemann/prokka) could be used.
+GenAPI is a program for gene presence absence table generation for series of closely related bacterial genomes from annotated FASTA file. For genome annotation [prokka](https://github.com/tseemann/prokka) could be used.
 
 ### Purpose
 
@@ -17,12 +17,12 @@ Before running the program make sure that the following programs are installed a
 
 Clone the repository:
 ```shell
-git clone https://github.com/MigleSur/GenMat.git
+git clone https://github.com/MigleSur/GenAPI.git
 ```
 
-Add the following line to your .bashrc (if the GenMat is located in a different directory than /bin/bash, use the path to that directory):
+Add the following line to your .bashrc (if the GenAPI is located in a different directory than /bin/bash, use the path to that directory):
 ```shell
-export PATH=$PATH:/usr/bin/GenMat
+export PATH=$PATH:/usr/bin/GenAPI
 ```
 
 Reload the .bashrc file by running:
@@ -32,7 +32,7 @@ source ~/.bashrc
 
 To run the program move to the folder where the output files should be produced and run:
 ```
-GenMat [options] [-n <analysis name>]
+GenAPI [options] [-n <analysis name>]
 ```
 
 ### Input
@@ -42,7 +42,7 @@ Annotated contig/scaffold GFF files of the chosen samples have to be placed in t
 ### Usage
 
 ```
-Usage: GenMat [options] [--name <analysis name>]
+Usage: GenAPI [options] [--name <analysis name>]
 
         -n, --name      Chosen analysis name.
                         Default: date in yyyy-mm-dd format
