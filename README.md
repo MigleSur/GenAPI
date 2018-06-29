@@ -22,7 +22,7 @@ git clone https://github.com/MigleSur/GenAPI.git
 
 Add the following line to your .bashrc (if the GenAPI is located in a different directory than /bin/bash, use the path to that directory):
 ```shell
-export PATH=$PATH:/usr/bin/GenAPI
+export PATH=$PATH:/usr/bin/genapi
 ```
 
 Reload the .bashrc file by running:
@@ -32,7 +32,7 @@ source ~/.bashrc
 
 To run the program move to the folder where the output files should be produced and run:
 ```
-GenAPI [options] [-n <analysis name>]
+genapi [options] [-n <analysis name>]
 ```
 
 ### Input
@@ -42,7 +42,7 @@ Annotated contig/scaffold GFF files of the chosen samples have to be placed in t
 ### Usage
 
 ```
-Usage: GenAPI [options] [--name <analysis name>]
+Usage: genapi [options] [--name <analysis name>]
 
         -n, --name      Chosen analysis name.
                         Default: date in yyyy-mm-dd format
