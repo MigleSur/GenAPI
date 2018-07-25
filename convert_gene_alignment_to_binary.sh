@@ -8,8 +8,6 @@ geneIden2=$5
 geneLen=$6
 
 
-rm -f output_results/gene_presence_absence_${NAME}.txt
-rm -f tmp_column_000_gene_names.txt
 echo "Gene" > tmp_column_000_gene_names.txt
 
 # remove all the short genes from the clustered genes file

@@ -5,6 +5,7 @@ geneCov1=$2
 geneCov2=$3
 geneIden1=$4
 geneIden2=$5
+threads=$6
 
 
 grep ">" output_results/clustered_genes_${NAME}.ffn | awk '{print substr($0, 2,1000)}'> tmp_genelist
@@ -20,7 +21,7 @@ do
 
 	makeblastdb -in ${lines}*.fasta -dbtype nucl
 
-	blastn -task blastn -query output_results/clustered_genes_${NAME}.ffn -db ${lines}*.fasta -outfmt 6 > ${lines}_outblast
+	blastn -task blastn -num_threads $threads -query output_results/clustered_genes_${NAME}.ffn -db ${lines}*.fasta -outfmt 6 > ${lines}_outblast
 
 	rm -f output_results/sample_gene_stats/"$lines"_db_gene_presence.txt
 
