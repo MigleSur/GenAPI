@@ -10,7 +10,7 @@ threads=$6
 
 grep ">" output_results/clustered_genes_${NAME}.ffn | awk '{print substr($0, 2,1000)}'> tmp_genelist
 
-cat output_results/clustered_genes_${NAME}.ffn | awk '$0 ~ ">" {print c; c=0; printf substr($0,2,1000) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; } ' | sed '/^\s*$/d' > tmp_genelength
+cat output_results/clustered_genes_${NAME}.ffn | awk '$0 ~ ">" {print c; c=0; printf substr($0,2,1000) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; } ' | sed '/^\s*$/d'  > tmp_genelength
 
 mkdir -p output_results/sample_gene_stats
 
@@ -19,22 +19,22 @@ mkdir -p output_results/sample_blast_results
 while read lines
 do
 
-	makeblastdb -in ${lines}*.fasta -dbtype nucl
-
-	blastn -task blastn -num_threads $threads -query output_results/clustered_genes_${NAME}.ffn -db ${lines}*.fasta -outfmt 6 > ${lines}_outblast
+	makeblastdb -in ${lines}.fasta -input_type fasta -dbtype nucl
+	
+	blastn -task blastn -num_threads $threads -query output_results/clustered_genes_${NAME}.ffn -db ${lines}.fasta -outfmt 6 > ${lines}_outblast
 
 	rm -f output_results/sample_gene_stats/"$lines"_db_gene_presence.txt
 
 
 	while read  gene 
-	do
+	do		
 
 		GEN=`echo ${gene}`
 		LENGTH=`grep -wF "${GEN}" tmp_genelength`
 		LEN=`awk '{print $2}' <<< ${LENGTH}`
 
 		grep -wF "$GEN" ${lines}_outblast > tmp_all_headline
-
+		
 		LC_ALL=C sort -gr -k11,11 -k12,12n tmp_all_headline | tail -2 > tmp_headline
 		
 		alignmentlen_first=`awk '{print $4}' tmp_headline | tail -1`	
@@ -49,11 +49,11 @@ do
 		# interval 1
 		first_interval_e=`awk '{print $8}' <<< ${first_aln}`
 		first_interval_s=`awk '{print $7}' <<< ${first_aln}`
-			
+		
 		# interval 2
 		second_interval_e=`awk '{print $8}' <<< ${second_aln}`
 		second_interval_s=`awk '{print $7}' <<< ${second_aln}`
-			
+	
 		x=`echo "$LEN/2" | bc -l`
 	
 		# find max interval end and min interval start
@@ -63,25 +63,51 @@ do
 		overlap_interval=`echo "$max_end-$min_start+1" | bc`
 		nonoverlap_interval=`echo "($alignmentlen_first+$alignmentlen_second)" | bc`
 		# if one of the alignments have the same e-value as the best one and is at least cov1 (25%) of the gene length and iden1 (98%) of identity or is  cov2 (50%) of the gene length and iden2 (90%) of identity
+	
+		# are we really checking all of them??? or only the first one????
 		
 		first_alignment_evalue=`awk '{print $11}'<<< ${alignment_first}`
-		best_alignment1=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov1=$geneCov1 -v iden1=$geneIden1 '$11==var1 && $3>=iden1 && $4>=var2*cov1' tmp_all_headline | tail -1`
-		best_alignment2=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov2=$geneCov2 -v iden2=$geneIden2 '$11==var1 && $3>=iden2 && $4>=var2*cov2' tmp_all_headline | tail -1`
-			
+		best_alignments1=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov1=$geneCov1 -v iden1=$geneIden1 '$11==var1 && $3>=iden1 && $4>=var2*cov1' tmp_all_headline `
+		best_alignments2=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov2=$geneCov2 -v iden2=$geneIden2 '$11==var1 && $3>=iden2 && $4>=var2*cov2' tmp_all_headline `
+	
 		# checking if at least one of the alignments with the lowest e-value have iden1 (>=98%) identity and cov1 (>=25%) coverage
-		if [[ -n $best_alignment1 ]]
+		if [[ -n $best_alignments1 ]]
 		then
-			ALIGN=`awk '{print $4}' <<< ${best_alignment1}`
-			PERCENT=`awk '{print $3}' <<< ${best_alignment1}`
-			FRACTION=`awk -v var1=$LEN '{print $4/var1}' <<< ${best_alignment1}`
+			ALIGN=0
+			PERCENT=0
+			FRACTION=0
+			while read element
+			do
+				ALIGN_temp=`awk '{print $4}' <<< "${element}"`
+				PERCENT_temp=`awk '{print $3}' <<< "${element}"`
+				FRACTION_temp=`awk -v var1=$LEN '{print $4/var1}' <<< "${element}"`
+				if (( $(echo "${ALIGN_temp}> ${ALIGN}" | bc ) )) && (( $(echo "${PERCENT_temp}>${PERCENT}" | bc -l) )) && (( $(echo "${FRACTION_temp}>${FRACTION}" | bc -l) ))
+				then
+					ALIGN=${ALIGN_temp}
+					PERCENT=${PERCENT_temp}
+					FRACTION=${FRACTION_temp}
+				fi		
+			done <<< "$best_alignments1"
 			AAA="1"
 		# checking if at least one of the alignments with the lowest e-value have iden2 (>=90%) identity and cov2 (>=50%) coverage
-		elif [[ -n $best_alignment2 ]]
+		elif [[ -n $best_alignments2 ]]
 		then
-			ALIGN=`awk '{print $4}' <<< ${best_alignment2}`
-			PERCENT=`awk '{print $3}' <<< ${best_alignment2}`
-			FRACTION=`awk -v var1=$LEN '{print $4/var1}' <<< ${best_alignment2}`
-			AAA="2"	
+			ALIGN=0
+                        PERCENT=0
+                        FRACTION=0
+                        while read element
+                        do
+                                ALIGN_temp=`awk '{print $4}' <<< "${element}"`
+                                PERCENT_temp=`awk '{print $3}' <<< "${element}"`
+                                FRACTION_temp=`awk -v var1=$LEN '{print $4/var1}' <<< "${element}"`
+                                if (( $(echo "${ALIGN_temp}> ${ALIGN}" | bc ) )) && (( $(echo "${PERCENT_temp}>${PERCENT}" | bc -l) )) && (( $(echo "${FRACTION_temp}>${FRACTION}" | bc -l) ))
+                                then
+                                        ALIGN=${ALIGN_temp}
+                                        PERCENT=${PERCENT_temp}
+                                        FRACTION=${FRACTION_temp}
+                                fi
+                        done <<< "$best_alignments2"
+                        AAA="2"
 		# first 2 best alignments get merged
 		else
 			first_align=`awk '{print $4}' <<< ${first_aln}`
@@ -117,7 +143,7 @@ do
 				AAA="5"
 			fi
 		fi
-		
+
 		# define the variable gene
 		if (( $(echo "scale=4;$FRACTION>=$geneCov1" | bc) )) && (( $(echo "scale=4;$PERCENT>=$geneIden1" | bc) )) ||  (( $(echo "scale=4;$FRACTION>=$geneCov2" | bc) )) && (( $(echo "scale=4;$PERCENT>=$geneIden2" | bc) )) 
 		then

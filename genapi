@@ -1,7 +1,5 @@
 #!/bin/bash
 
-mkdir -p output_results/
-
 # help message
 
 print_help() {
@@ -18,7 +16,7 @@ echo "Usage: GenMat [options] [--name <analysis name>]
         -x, --geneCov1  First minimum alignment length threshold.
                         Default: 0.25
         -y, --geneCov2  Second minimum alignment length threshold.
-        2                Default: 0.50
+                        Default: 0.50
         -w, --geneIden1 First minimum gene identity threshold.
                         Default: 0.98
         -z, --geneIden2 Second minimum gene identity threshold.
@@ -26,6 +24,12 @@ echo "Usage: GenMat [options] [--name <analysis name>]
         -l, --geneLen   Minimum gene length. Shorter than the threshold genes are
                         excluded from the analysis.
                         Default: 150
+	-t, --tree	Create a phylogenetic tree using gene presence-absence
+			matrix. Requires RAxML to be installed.
+			Default: False
+	-m, --matrix	Create a gene presence-absence matrix visualization. Requires
+			Rscript and pheatmap library to be installed.
+			Default: False
         -v, --version   Print the tool version.
         -h, --help      Print this message.
         " >&2 ;
@@ -33,9 +37,10 @@ echo "Usage: GenMat [options] [--name <analysis name>]
 
 
 # optional arguments for the tool
-OPTS=`getopt -o vhp:a:c:n:x:y:w:z:l: --long threads:,help,version,coverage:,identity:,name:,geneCov1:,geneCov2:,geneIden1:,geneIden2:,geneLen: -n 'parse-options' -- "$@"`
+OPTS=`getopt -o vhmtp:a:c:n:x:y:w:z:l: --long threads:,help,version,tree,matrix,coverage:,identity:,name:,geneCov1:,geneCov2:,geneIden1:,geneIden2:,geneLen: -n 'parse-options' -- "$@"`
 eval set -- "$OPTS"
 
+set -euo pipefail
 
 if [ $? != 0 ]
 then
@@ -53,9 +58,12 @@ ALIGNMENT_COVERAGE=0.8
 IDENTITY=0.9
 geneCov1=0.25
 geneCov2=0.50
-geneIden1=0.98
-geneIden2=0.90
+geneIden1=98
+geneIden2=90
 geneLen=150
+PHYL_TREE=false
+VISUALIZE=false
+
 
 while true; do
   case "$1" in
@@ -63,6 +71,8 @@ while true; do
     -p | --threads ) THREADS="$2"; shift 2 ;;
     -h | --help )    HELP=true; shift ;;
     -v | --version ) VERSION=true; shift ;;
+    -m | --matrix ) VISUALIZE=true; shift;;
+    -t | --tree ) PHYL_TREE=true; shift;;
     -a | --coverage ) ALIGNMENT_COVERAGE="$2"; shift 2 ;;
     -c | --identity ) IDENTITY="$2"; shift 2 ;;
     -x | --geneCov1 ) geneCov1="$2"; shift 2;;
@@ -84,7 +94,7 @@ fi
 
 if $VERSION
 then
-        echo "GenMat v1.0 (https://github.com/MigleSur/GenMat)
+        echo "GenAPI v1.0 (https://github.com/MigleSur/GenAPI)
 Developed by: Migle Gabrielaite
 Contact: migle.gabrielaite@gmail.com"
 	exit 2
@@ -92,18 +102,25 @@ fi
 
 # checking if the required programs are installed
 if ! [ -x "$(command -v blastn)" ]; then
- 	echo 'Error: blast is not installed or not included in the path.' >&2
+ 	echo 'ERROR: blast is not installed or not included in the path.' >&2
  	exit 1
 fi
 
 if ! [ -x "$(command -v cd-hit-est)" ]; then
- 	echo 'Error: CD-HIT is not installed or not included in the path.' >&2
+ 	echo 'ERROR: CD-HIT is not installed or not included in the path.' >&2
  	exit 1
 fi
 
 if ! [ -x "$(command -v bedtools)" ]; then
- 	echo 'Error: bedtools is not installed or not included in the path.' >&2
+ 	echo 'ERROR: bedtools is not installed or not included in the path.' >&2
  	exit 1
+fi
+
+# Checking if there are any GFF files present for analysis
+if [ ! `ls -1 *gff 2>/dev/null | wc -l ` -gt 0 ]
+then
+	echo 'ERROR: GFF files are not present in the analysis directory.' >&2
+	exit 1
 fi
 
 # printing all the settings to a settings file
@@ -119,9 +136,9 @@ Second minimum threshold for gene identity: $geneIden2
 Minimum gene length used for analysis: $geneLen" > ${NAME}_settings
 
 
+mkdir -p output_results/
 
 # extracting ffn and scaffolds.fasta files from gff files
-
 for file in ./*.gff
 do
 	file_start=`echo ${file} | sed 's/\.gff//'`
@@ -130,13 +147,19 @@ do
 	sed '/##FASTA/Q' < $file | grep -v "##" > ${file_start}_temp.tsv
 	cat ${file_start}_temp.tsv | awk -F'\t' '{print $1, $4, $5}' | tr " " "\t" > tmp00	
 	cat ${file_start}_temp.tsv | awk -F'ID=' '{print $2}' | sed -e 's/;.*//' > tmp01
-	cat ${file_start}_temp.tsv | awk -F'product=' '{print $2}' | sed -e 's/;.*//' | tr " " "_" > tmp02
+	#cat ${file_start}_temp.tsv | awk -F'product=' '{print $2}' | sed -e 's/;.*//' | tr " " "_" > tmp02
 
-	paste tmp01 tmp02 -d _ > tmp03
-	paste tmp00 tmp03 -d '\t'  > ${file_start}.bed
+	#paste tmp01 tmp02 -d _ > tmp03
+	#paste tmp00 tmp03 -d '\t'  > ${file_start}.bed
+
+
+	paste tmp00 tmp01 -d '\t'  > ${file_start}.bed
+	
+
 	
 	bedtools getfasta -fi ${file_start}.fasta -bed ${file_start}.bed -fo ${file_start}.ffn -name	
-	rm -f tmp00 tmp01 tmp02 tmp03 ${file_start}.bed ${file_start}_temp.tsv
+	#rm -f tmp00 tmp01 tmp02 tmp03 ${file_start}.bed ${file_start}_temp.tsv
+	rm -f tmp00 tmp01 ${file_start}.bed ${file_start}_temp.tsv
 
 done
 
@@ -148,7 +171,7 @@ sed -i "s/.ffn//g" output_results/sample_list.txt
 
 cat *.ffn > ${ALLGENES}
 
-#sed -i "s/ /_/g" ${ALLGENES}
+sed -i "s/ /_/g" ${ALLGENES}
 
 CLUSTERED=output_results/clustered_genes_${NAME}.ffn
 
@@ -172,3 +195,35 @@ rm -f *.fasta
 rm -f *.fasta.fai
 rm -f *.ffn
 
+
+# generate the phylogenetic tree based on the gene presence-absence matrix
+
+if $PHYL_TREE
+then
+	if ! [ -x "$(command -v raxmlHPC)" ]; then
+        	echo 'ERROR: RAxML is not installed or not included in the path.' >&2
+        	exit 1
+	fi
+
+	phylogenetic_analysis.sh ${NAME}
+fi
+
+
+# generate the gene presence-absence matrix visualizations
+
+if $VISUALIZE
+then
+
+	if ! [ -x "$(command -v blastn)" ]; then
+        	echo 'ERROR: blast is not installed or not included in the path.' >&2
+        	exit 1
+	fi
+
+	# generate the gene presence-absence matrix visualization for only gained/lost genes
+
+	Rscript generate_heatmap_missing.R ${NAME}
+
+	# generate the gene presence-absence matrix visualization for all genes
+
+	Rscript generate_heatmap_all.R ${NAME}
+fi
