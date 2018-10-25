@@ -13,9 +13,9 @@ Before running the program make sure that the following programs are installed a
 [CD-HIT >=4.6.1](http://weizhongli-lab.org/cd-hit/) <br/>
 [Bedtools >=2.26](http://bedtools.readthedocs.io/en/latest/) <br/>
 Requirements for optional visualizations: <br/>
-Heatmaps:
+Heatmaps: <br/>
 [R >=3.2.5](https://www.r-project.org/) <br/>
-[pheatmap >=1.0.10](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) <br\>
+[pheatmap >=1.0.10](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) <br/>
 Phylogenetic tree:
 [RAxML](https://sco.h-its.org/exelixis/web/software/raxml/index.html) <br/>
 
