@@ -164,6 +164,8 @@ do
 	split_gff $file $
 done
 
+wait
+
 # creating a file of all the genes and clustering it with cd-hit-est
 ALLGENES=output_results/all_genes_${NAME}
 ls *.ffn > output_results/sample_list.txt

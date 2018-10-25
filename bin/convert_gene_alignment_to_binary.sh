@@ -47,8 +47,9 @@ convert_to_binary() {
 
 while read line
 do
-	convert_to_binary $line
+	convert_to_binary $line $
 
 done < output_results/sample_list.txt
+wait
 
 paste tmp_column_*.txt > output_results/gene_presence_absence_${NAME}.txt
