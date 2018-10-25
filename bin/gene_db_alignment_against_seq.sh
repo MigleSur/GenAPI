@@ -8,7 +8,7 @@ geneIden2=$5
 threads=$6
 
 
-grep ">" output_results/clustered_genes_${NAME}.ffn | awk '{print substr($0, 2,1000)}'> tmp_genelist
+LANG=C grep ">" output_results/clustered_genes_${NAME}.ffn | awk '{print substr($0, 2,1000)}'> tmp_genelist
 
 cat output_results/clustered_genes_${NAME}.ffn | awk '$0 ~ ">" {print c; c=0; printf substr($0,2,1000) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; } ' | sed '/^\s*$/d'  > tmp_genelength
 
@@ -30,10 +30,10 @@ do
 	do		
 
 		GEN=`echo ${gene}`
-		LENGTH=`grep -wF "${GEN}" tmp_genelength`
+		LENGTH=`LANG=C grep -wF "${GEN}" tmp_genelength`
 		LEN=`awk '{print $2}' <<< ${LENGTH}`
 
-		grep -wF "$GEN" ${lines}_outblast > tmp_all_headline
+		LANG=C grep -wF "$GEN" ${lines}_outblast > tmp_all_headline
 		
 		LC_ALL=C sort -gr -k11,11 -k12,12n tmp_all_headline | tail -2 > tmp_headline
 		
