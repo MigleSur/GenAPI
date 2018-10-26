@@ -19,4 +19,4 @@ First minimum threshold for gene coverage: $geneCov1
 Second minimum threshold for gene coverage: $geneCov2
 First minimum threshold for gene identity: $geneIden1
 Second minimum threshold for gene identity: $geneIden2
-Minimum gene length used for analysis: $geneLen" > output_results/${NAME}_settings
+Minimum gene length used for analysis: $geneLen" > ${NAME}_settings
