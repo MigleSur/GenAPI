@@ -12,4 +12,4 @@ rm -f temp_variable_genes
 rm -f *.fasta
 rm -f *.fasta.fai
 rm -f *.ffn
-
+rm -f *_binary_alignments.fasta.reduced 

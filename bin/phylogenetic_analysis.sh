@@ -13,4 +13,12 @@ done < output_results/sample_list.txt
 cat fasta_* > ${NAME}_binary_alignments.fasta
 
 raxmlHPC -n ${NAME} -s ${NAME}_binary_alignments.fasta -m BINCAT -p 12345
-mv *.${NAME} output_results/phylogenetic_analysis/
+
+if [ `ls -1 *.${NAME} 2>/dev/null | wc -l ` -gt 0  ]
+then
+	mv *.${NAME} output_results/phylogenetic_analysis/ 
+else
+	rm -rf output_results/phylogenetic_analysis
+	sh remove_temp.sh	
+fi
+
