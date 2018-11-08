@@ -85,7 +85,7 @@ The minimum length requirement for the gene to be included in the gene presence-
 
 ### Disclaimer
 
-GenAPI does not take into account gene duplicates, therefore if there are variable number of copies of the same gene in different samples, it will not be detected. GenAPI was developed to identify novel gene acquisition and complete gene deletion, therefore multiple gene copies were not included.
+GenAPI does not take into account gene duplicates, therefore if there are variable number of copies of the same gene in different samples, it will not be detected. For this kind of analysis the complete genome should be used with other tools developed for that purpose. GenAPI was developed to identify novel gene acquisition and complete gene deletion, therefore multiple gene copies were not included.
 
 GenAPI does not take into account incomplete deletions in the genes. GenAPI was developed to identify gene deletions and acquisitions, not deletions and acquisitions within the genes. There are many excellent tools for deletion/acquisition within gene detection.
 
