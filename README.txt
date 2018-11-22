@@ -1,6 +1,6 @@
 # GenAPI
 
-GenAPI is a program for gene presence absence table generation for series of closely related bacterial genomes from annotated GFF files. For genome annotation [prokka](https://github.com/tseemann/prokka) software could be used.
+GenAPI is a program for gene presence absence table generation for series of closely related bacterial genomes from annotated GFF files. For genome annotation prokka software could be used.
 
 ### Purpose
 
@@ -23,25 +23,25 @@ RAxML >=8.2.11
 ### Installation
 
 Clone the repository:
-```
+
 git clone https://github.com/MigleSur/GenAPI.git
-```
+
 
 Add the following line to your .bashrc
 (if the GenAPI is located in a different directory than /bin/bash, use the path to that directory):
-```
+
 export PATH=$PATH:/usr/bin/GenAPI/bin
-```
+
 
 Reload the .bashrc file by running:
-```
+
 source ~/.bashrc
-```
+
 
 To run the program move to the folder where the output files should be produced and run:
-```
+
 genapi [options] [-n <analysis name>]
-```
+
 
 ### Input
 
@@ -49,7 +49,7 @@ Annotated contig/scaffold/genome GFF files of the chosen samples have to be plac
 
 ### Usage
 
-```
+
 Usage: genapi [options] [--name <analysis name>]
 
         -n, --name      Chosen analysis name.
@@ -80,7 +80,8 @@ Usage: genapi [options] [--name <analysis name>]
         
         -v, --version   Print the tool version.
         -h, --help      Print this message.
-```
+
+
 First minimum alignment length threshold and first minimum identity threshold are used as a pair. The same goes for the second pair. It is not advised to change those arguments unless there is a strong reason for doing that.
 
 The minimum length requirement for the gene to be included in the gene presence-absence matrix is 150 bp, it can be changed but not recommended unless it was made sure that lower threshold is required.
