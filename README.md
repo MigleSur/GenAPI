@@ -17,7 +17,7 @@ Requirements for optional visualizations: <br/>
 Heatmaps: <br/>
 [R >=3.2.5](https://www.r-project.org/) <br/>
 [pheatmap >=1.0.10](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) <br/>
-Phylogenetic tree: <br/>
+Phylogenetic tree (minimum 4 samples are required for the tree to be created): <br/>
 [RAxML >=8.2.11](https://sco.h-its.org/exelixis/web/software/raxml/index.html) <br/>
 
 ### Installation
