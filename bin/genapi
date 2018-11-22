@@ -154,6 +154,7 @@ remove_noid(){
 			sed -i "/$line/d" $tsv
 		done < no_id.tsv
 	fi
+	rm -f no_id.tsv
 }
 
 split_gff(){
