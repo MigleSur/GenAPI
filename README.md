@@ -1,10 +1,10 @@
 # GenAPI
 
-GenAPI is a program for gene presence absence table generation for series of closely related bacterial genomes from annotated GFF files. For genome annotation [prokka](https://github.com/tseemann/prokka) could be used.
+GenAPI is a program for gene presence absence table generation for series of closely related bacterial genomes from annotated GFF files. For genome annotation [prokka](https://github.com/tseemann/prokka) software could be used.
 
 ### Purpose
 
-Initially the program was written as an alternative for [Roary](http://sanger-pathogens.github.io/Roary/) for incomplete very closely related bacteria genomes. It was used for the analysis of the bacterial isolates from the same source taken over time, thus the isolates were very closely related. The program performed well even with minor differences between samples and managed to identify them. 
+Initially the program was written as an alternative for [Roary](http://sanger-pathogens.github.io/Roary/) for incomplete very closely related bacteria genomes. The tool was validated on multiple real and simulated datasets and it performed well by identifying all truly absent genes and calling very little false positives.
 
 ### Versions of software it was tested against
 
@@ -12,12 +12,13 @@ Before running the program make sure that the following programs are installed a
 [BLAST >=2.6.0+](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) <br/>
 [CD-HIT >=4.6.1](http://weizhongli-lab.org/cd-hit/) <br/>
 [Bedtools >=2.26](http://bedtools.readthedocs.io/en/latest/) <br/>
+<br/>
 Requirements for optional visualizations: <br/>
 Heatmaps: <br/>
 [R >=3.2.5](https://www.r-project.org/) <br/>
 [pheatmap >=1.0.10](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) <br/>
 Phylogenetic tree: <br/>
-[RAxML](https://sco.h-its.org/exelixis/web/software/raxml/index.html) <br/>
+[RAxML >=8.2.11](https://sco.h-its.org/exelixis/web/software/raxml/index.html) <br/>
 
 ### Installation
 
