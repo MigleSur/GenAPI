@@ -17,7 +17,7 @@ Requirements for optional visualizations:
 Heatmaps:
 R >=3.2.5
 pheatmap >=1.0.10
-Phylogenetic tree:
+Phylogenetic tree (minimum 4 samples are required for the tree to be created):
 RAxML >=8.2.11
 
 ### Installation
