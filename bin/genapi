@@ -143,15 +143,16 @@ sh settings.sh $NAME $THREADS $ALIGNMENT_COVERAGE $IDENTITY $geneCov1 $geneCov2 
 mkdir -p output_results/
 
 remove_noid(){
-	tsv=$1
-	grep -v "ID" $tsv > no_id.tsv
-	if [ -s "no_id.tsv" ]
+	tsv_file=$1
+	
+	if grep -qv "ID" ${tsv_file}
 	then
+		grep -v "ID" ${tsv_file} > no_id.tsv
 		echo "Warning: The following lines have no ID and will be excluded from the analysis:"
 		while read line
 		do
 			echo $line
-			sed -i "/$line/d" $tsv
+			sed -i "/$line/d" ${tsv_file}
 		done < no_id.tsv
 	fi
 	rm -f no_id.tsv
