@@ -35,7 +35,7 @@ convert_to_binary() {
         do
                 if grep -qFx $gene temp_variable_genes
                 then
-                        cat output_results/${line}_tmp | grep -F $gene | awk -v cov1=$geneCov1 -v cov2=$geneCov2 -v iden1=$geneIden1 -v iden2=$geneIden2 '{if ($6>=iden1 && $5>=cov1) print "1"; else if ($6>=iden2 && $5>=cov2) print "1"; else print "0"}' >> tmp_column_${line}.txt
+                        cat output_results/${line}_tmp | grep -wF $gene | awk -v cov1=$geneCov1 -v cov2=$geneCov2 -v iden1=$geneIden1 -v iden2=$geneIden2 '{if ($6>=iden1 && $5>=cov1) print "1"; else if ($6>=iden2 && $5>=cov2) print "1"; else print "0"}' >> tmp_column_${line}.txt
                 else
                         echo "1" >> tmp_column_${line}.txt
                 fi
