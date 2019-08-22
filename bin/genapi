@@ -163,7 +163,7 @@ split_gff(){
 	file_start=`echo ${file} | sed 's/\.gff//'`
         awk '/##FASTA/,0{if (!/##FASTA/)print}' < $file > ${file_start}.fasta
 
-	sed '/##FASTA/Q' < $file | grep -v "##" > ${file_start}_temp.tsv
+	sed '/##FASTA/q' < $file | grep -v "##" > ${file_start}_temp.tsv
 
 	# removing all the lines with no IDs
 	remove_noid ${file_start}_temp.tsv
