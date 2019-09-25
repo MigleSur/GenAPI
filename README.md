@@ -107,7 +107,7 @@ heatmap_plot_variable_genes_[name].png | Heatmap visualization for lost or acqui
 
 Migle Gabrielaite, Rasmus L. Marvig <br/>
 GenAPI: a tool for gene absence-presence identification in fragmented bacterial genome sequences <br/>
-doi: 10.1101/658476
+doi: [10.1101/658476](https://www.biorxiv.org/content/10.1101/658476v1)
 
 ### Author
 
