@@ -170,9 +170,9 @@ split_gff(){
 
 	# extracting ffn format from fasta file	
 	cat ${file_start}_temp.tsv | awk -F'\t' '($3=="CDS" || $3=="gene" || $3=="tRNA" || $3=="tmRNA" || $3=="ncRNA" || $3=="rRNA") {print $1, $4, $5}' | tr " " "\t" > tmp00
-	cat ${file_start}_temp.tsv | awk -F'\t' '($3=="CDS" || $3=="gene" || $3=="tRNA" || $3=="tmRNA" || $3=="ncRNA" || $3=="rRNA")' | awk -F'ID=' '{print $2}' | sed -e 's/;.*//' > tmp01
+	cat ${file_start}_temp.tsv | awk -F'\t' '($3=="CDS" || $3=="gene" || $3=="tRNA" || $3=="tmRNA" || $3=="ncRNA" || $3=="rRNA")' | awk -F'ID=' '{print $2}' | sed -e "s/;.*//" > tmp01
 
-        paste tmp00 tmp01 -d '\t'  > ${file_start}.bed
+        paste tmp00 tmp01  > ${file_start}.bed
 
         bedtools getfasta -fi ${file_start}.fasta -bed ${file_start}.bed -fo ${file_start}.ffn -name
         rm -f tmp00 tmp01 ${file_start}.bed ${file_start}_temp.tsv
