@@ -105,5 +105,5 @@ heatmap_plot_variable_genes_[name].png | Heatmap visualization for lost or acqui
 
 ### Author
 
-Migle Gabrielaite | migle.gabrielaite@gmail.com
+Migle Gabrielaite | migle.gabrielaite@regionh.dk
 
