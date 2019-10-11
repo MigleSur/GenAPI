@@ -208,10 +208,10 @@ rm -f output_results/all_genes_${NAME}
 # blast each sequence to the clustered database
 
 echo -en "-----FINDING THE BEST ALIGNMENT FOR EACH GENE SEQUENCE-----\n"
-sh gene_db_alignment_against_seq.sh  ${NAME} ${geneCov1} ${geneCov2} ${geneIden1} ${geneIden2} ${THREADS}
+bash gene_db_alignment_against_seq.sh  ${NAME} ${geneCov1} ${geneCov2} ${geneIden1} ${geneIden2} ${THREADS}
 
 echo -en "-----CREATING GENE PRESENCE/ABSENCE MATRIX-----\n"
-sh convert_gene_alignment_to_binary.sh  ${NAME} ${geneCov1} ${geneCov2} ${geneIden1} ${geneIden2} ${geneLen}
+bash convert_gene_alignment_to_binary.sh  ${NAME} ${geneCov1} ${geneCov2} ${geneIden1} ${geneIden2} ${geneLen}
 
 echo -en "-----THE ANALYSIS IS DONE-----\n"
 
@@ -225,14 +225,14 @@ then
 		not_found RAxML
 	fi
 	echo -en "-----GENERATING THE PHYLOGENETIC TREE-----\n"
-	sh phylogenetic_analysis.sh ${NAME}
+	bash phylogenetic_analysis.sh ${NAME}
 fi
 
 
 
 # remove temporary files
 
-sh remove_temp.sh ${NAME}
+bash remove_temp.sh ${NAME}
 
 
 
