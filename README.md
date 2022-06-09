@@ -37,7 +37,7 @@ Reload the .bashrc file by running:
 source ~/.bashrc
 ```
 
-To run the program move to the folder where the output files should be produced and run:
+To run the program move to the folder where the input files are located and run:
 ```
 genapi [options] [-n <analysis name>]
 ```
