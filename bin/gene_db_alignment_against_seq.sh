@@ -1,4 +1,5 @@
 #!/bin/bash
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 NAME=$1
 geneCov1=$2
@@ -6,48 +7,50 @@ geneCov2=$3
 geneIden1=$4
 geneIden2=$5
 threads=$6
+output=$7
+input=$8
 evalue=0.01
 
-LANG=C grep ">" output_results/clustered_genes_${NAME}.ffn | awk '{print substr($0, 2,1000)}'> tmp_genelist
+LANG=C grep ">" ${output}/output_results/clustered_genes_${NAME}.ffn | awk '{print substr($0, 2,1000)}'> ${input}/tmp_genelist
 
-cat output_results/clustered_genes_${NAME}.ffn | awk '$0 ~ ">" {print c; c=0; printf substr($0,2,1000) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; } ' | sed '/^\s*$/d'  > tmp_genelength
+cat ${output}/output_results/clustered_genes_${NAME}.ffn | awk '$0 ~ ">" {print c; c=0; printf substr($0,2,1000) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; } ' | sed '/^\s*$/d'  > ${input}/tmp_genelength
 
-mkdir -p output_results/sample_gene_stats
+mkdir -p ${output}/output_results/sample_gene_stats
 
-mkdir -p output_results/sample_blast_results
+mkdir -p ${output}/output_results/sample_blast_results
 
 while read lines
 do
-
+	lines_name=$(basename ${lines})
 	makeblastdb -in ${lines}.fasta -input_type fasta -dbtype nucl
 	
-	blastn -task blastn -num_threads $threads -evalue $evalue -query output_results/clustered_genes_${NAME}.ffn -db ${lines}.fasta -outfmt 6 > ${lines}_outblast
+	blastn -task blastn -num_threads $threads -evalue $evalue -query ${output}/output_results/clustered_genes_${NAME}.ffn -db ${lines}.fasta -outfmt 6 > ${lines}_outblast
 
-	rm -f output_results/sample_gene_stats/"$lines"_db_gene_presence.txt
+	rm -f ${output}/output_results/sample_gene_stats/"${lines_name}"_db_gene_presence.txt
 
 
 	while read  gene 
 	do		
 
 		GEN=`echo ${gene}`
-		LENGTH=`LANG=C grep -wF "${GEN}" tmp_genelength`
+		LENGTH=`LANG=C grep -wF "${GEN}" ${input}/tmp_genelength`
 		LEN=`awk '{print $2}' <<< ${LENGTH}`
 
-		LANG=C grep -wF "$GEN" ${lines}_outblast > tmp_all_headline
+		LANG=C grep -wF "$GEN" ${lines}_outblast > ${input}/tmp_all_headline
 		
-		LC_ALL=C sort -gr -k11,11 -k12,12n tmp_all_headline | tail -2 > tmp_headline
+		LC_ALL=C sort -gr -k11,11 -k12,12n ${input}/tmp_all_headline | tail -2 > ${input}/tmp_headline
 		
-		alignmentlen_first=`awk '{print $4}' tmp_headline | tail -1`	
-		alignmentlen_second=`awk '{print $4}' tmp_headline | head -1`
-		alignment_first=`cat tmp_headline | tail -1`		
-		alignment_second=`cat tmp_headline | head -1`
+		alignmentlen_first=`awk '{print $4}' ${input}/tmp_headline | tail -1`	
+		alignmentlen_second=`awk '{print $4}' ${input}/tmp_headline | head -1`
+		alignment_first=`cat ${input}/tmp_headline | tail -1`		
+		alignment_second=`cat ${input}/tmp_headline | head -1`
 
 		# if one of the alignments have the same e-value as the best one and is at least cov1 (25%) of the gene length and iden1 (98%) of identity or is  cov2 (50%) of the gene length and iden2 (90%) of identity
 	
 		
 		first_alignment_evalue=`awk '{print $11}'<<< ${alignment_first}`
-		best_alignments1=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov1=$geneCov1 -v iden1=$geneIden1 '$11==var1 && $3>=iden1 && $4>=var2*cov1' tmp_all_headline `
-		best_alignments2=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov2=$geneCov2 -v iden2=$geneIden2 '$11==var1 && $3>=iden2 && $4>=var2*cov2' tmp_all_headline `
+		best_alignments1=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov1=$geneCov1 -v iden1=$geneIden1 '$11==var1 && $3>=iden1 && $4>=var2*cov1' ${input}/tmp_all_headline `
+		best_alignments2=`awk -v var1=$first_alignment_evalue -v var2=$LEN -v cov2=$geneCov2 -v iden2=$geneIden2 '$11==var1 && $3>=iden2 && $4>=var2*cov2' ${input}/tmp_all_headline `
 		
 		# if the first alignment does not exist
 		if [[ -z $alignment_first ]]
@@ -104,9 +107,9 @@ do
 		else
 		
 			# sorting makes the first interval start at lower number than the second one
-                	cat tmp_headline | sort -k7,7n > tmp_headline_sorted
-                	first_aln=`head -1 tmp_headline_sorted`
-                	second_aln=`tail -1 tmp_headline_sorted`
+                	cat ${input}/tmp_headline | sort -k7,7n > ${input}/tmp_headline_sorted
+                	first_aln=`head -1 ${input}/tmp_headline_sorted`
+                	second_aln=`tail -1 ${input}/tmp_headline_sorted`
 
                 	# interval 1
                 	first_interval_e=`awk '{print $8}' <<< ${first_aln}`
@@ -167,21 +170,20 @@ do
 		else
 			VARGENE=1
 		fi
-		
-		echo "$lines     $gene   $LEN   $ALIGN  $FRACTION       $PERCENT	$VARGENE	$AAA" >> output_results/sample_gene_stats/"$lines"_db_gene_presence.txt
+		echo "$lines     $gene   $LEN   $ALIGN  $FRACTION       $PERCENT	$VARGENE	$AAA" >> ${output}/output_results/sample_gene_stats/"$lines_name"_db_gene_presence.txt
 
-		rm -f tmp_headline
-		rm -f tmp_headline_sorted
+		rm -f ${input}/tmp_headline
+		rm -f ${input}/tmp_headline_sorted
 
-	done < tmp_genelist
+	done < ${input}/tmp_genelist
 
-	mv ${lines}_outblast output_results/sample_blast_results
+	mv ${lines}_outblast ${output}/output_results/sample_blast_results
 
-done < output_results/sample_list.txt
+done < ${output}/output_results/sample_list.txt
 
-rm -f tmp_all_headline
-rm -f tmp_genelist
-rm -f tmp_genelength
-rm -f *.nin
-rm -f *.nhr
-rm -f *.nsq
+rm -f ${input}/tmp_all_headline
+rm -f ${input}/tmp_genelist
+rm -f ${input}/tmp_genelength
+rm -f ${input}/*.nin
+rm -f ${input}/*.nhr
+rm -f ${input}/*.nsq

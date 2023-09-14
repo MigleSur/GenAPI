@@ -7,8 +7,8 @@ args <- commandArgs()
 # first argument is args[6] and so on
 
 analysis_name<- args[6]
-
-input<-paste("output_results/gene_presence_absence_",analysis_name,".txt", sep="")
+output <- args[7]
+input<-paste(output, "output_results/gene_presence_absence_",analysis_name,".txt", sep="")
 
 gene_table <- read.table(file=input, h=T, row.names=1)
 
@@ -19,9 +19,9 @@ trans_gene_table <- t(gene_table)
 variable_gene_table <- gene_table[rowSums(gene_table)!=ncol(gene_table),]
 trans_variable_gene_table <- t(variable_gene_table)
 
-file_name_all <- paste("output_results/heatmap_plot_all_genes_",analysis_name,".png", sep="")
+file_name_all <- paste(output, "output_results/heatmap_plot_all_genes_",analysis_name,".png", sep="")
 
-file_name_variable <- paste("output_results/heatmap_plot_variable_genes_",analysis_name,".png", sep="")
+file_name_variable <- paste(output, "output_results/heatmap_plot_variable_genes_",analysis_name,".png", sep="")
 
 
 h_all <- nrow(trans_gene_table) * 15 + max(nchar(colnames(trans_gene_table))) * 10 + 100

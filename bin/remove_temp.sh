@@ -1,15 +1,15 @@
 #!/bin/bash
 
 NAME=$1
-
-rm -f tmp_genelist
-rm -f tmp_column_*.txt
-rm -f fasta_*
-rm -f output_results/sample_list.txt
-rm -f clustered_noshort_${NAME}
-rm -f temp_variable_genes
+input=$2
+rm -f ${input}/tmp_genelist
+rm -f ${input}/tmp_column_*.txt
+rm -f ${input}/fasta_*
+rm -f ${input}/output_results/sample_list.txt
+rm -f ${input}/clustered_noshort_${NAME}
+rm -f ${input}/temp_variable_genes
 #rm -rf output_results/sample_blast_results
-rm -f *.fasta
-rm -f *.fasta.fai
-rm -f *.ffn
-rm -f *_binary_alignments.fasta.reduced 
+rm -f ${input}/*.fasta
+rm -f ${input}/*.fasta.fai
+rm -f ${input}/*.ffn
+rm -f ${input}/*_binary_alignments.fasta.reduced 

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 print_help() {
 echo "Usage: genapi [options] [--name <analysis name>]
 
@@ -29,6 +29,9 @@ echo "Usage: genapi [options] [--name <analysis name>]
 			Rscript and pheatmap library to be installed.
 			Default: False
         -v, --version   Print the tool version.
+        -i, --input     Location of the input files
+        -o, --output    Location of the output files 
+
         -h, --help      Print this message.
         " >&2 ;
 }
@@ -41,7 +44,7 @@ not_found(){
 
 
 # optional arguments for the tool
-OPTS=`getopt -o vhmtp:a:c:n:x:y:w:z:l: --long threads:,help,version,tree,matrix,coverage:,identity:,name:,geneCov1:,geneCov2:,geneIden1:,geneIden2:,geneLen: -n 'parse-options' -- "$@"`
+OPTS=`getopt -o vhmtp:a:c:n:x:y:w:z:l:i:o: --long threads:,help,version,tree,matrix,coverage:,identity:,name:,geneCov1:,geneCov2:,geneIden1:,geneIden2:,geneLen:,input:,output: -n 'parse-options' -- "$@"`
 eval set -- "$OPTS"
 
 set -euo pipefail
@@ -84,6 +87,8 @@ while true; do
     -w | --geneIden1 ) geneIden1="$2"; shift 2;;
     -z | --geneIden2 ) geneIden2="$2"; shift 2;;
     -l | --geneLen ) geneLen="$2"; shift 2;;
+    -i | --input ) input="$2"; shift 2;;
+    -o | --output ) output="$2"; shift 2;;
     -- ) shift; break ;;
     * ) echo "Internal error!"; exit 1 ;;
   esac
@@ -120,8 +125,7 @@ fi
 
 
 # Checking if there are any GFF files present for analysis
-
-if [ ! `ls -1 *gff 2>/dev/null | wc -l ` -gt 0 ]
+if [ ! `ls ${input} -1 *gff 2>/dev/null | wc -l ` -gt 0 ]
 then
 	echo 'ERROR: GFF files are not present in the analysis directory.' >&2
 	exit 1
@@ -134,26 +138,17 @@ fi
 
 # Analysis script start
 
-
 # printing all the settings to a settings file
+bash ${SCRIPT_DIR}/settings.sh $NAME $THREADS $ALIGNMENT_COVERAGE $IDENTITY $geneCov1 $geneCov2 $geneIden1 $geneIden2 $geneLen $input $output
 
-sh settings.sh $NAME $THREADS $ALIGNMENT_COVERAGE $IDENTITY $geneCov1 $geneCov2 $geneIden1 $geneIden2 $geneLen
 
-
-mkdir -p output_results/
+mkdir -p ${output}/output_results/
 
 remove_noid(){
 	tsv_file=$1
-	
 	if grep -qv "ID" ${tsv_file}
 	then
-		grep -v "ID" ${tsv_file} > no_id.tsv
-		echo "Warning: The following lines have no ID and will be excluded from the analysis:"
-		while read line
-		do
-			echo $line
-			sed -i "/$line/d" ${tsv_file}
-		done < no_id.tsv
+                grep "ID" ${tsv_file} | sponge ${tsv_file}
 	fi
 	rm -f no_id.tsv
 }
@@ -162,17 +157,14 @@ split_gff(){
 	file=$1
 	file_start=`echo ${file} | sed 's/\.gff//'`
         awk '/##FASTA/,0{if (!/##FASTA/)print}' < $file > ${file_start}.fasta
-
 	sed '/##FASTA/q' < $file | grep -v "##" > ${file_start}_temp.tsv
-
 	# removing all the lines with no IDs
 	remove_noid ${file_start}_temp.tsv
-
 	# extracting ffn format from fasta file	
-	cat ${file_start}_temp.tsv | awk -F'\t' '($3=="CDS" || $3=="gene" || $3=="tRNA" || $3=="tmRNA" || $3=="ncRNA" || $3=="rRNA") {print $1, $4, $5}' | tr " " "\t" > tmp00
-	cat ${file_start}_temp.tsv | awk -F'\t' '($3=="CDS" || $3=="gene" || $3=="tRNA" || $3=="tmRNA" || $3=="ncRNA" || $3=="rRNA")' | awk -F'ID=' '{print $2}' | sed -e "s/;.*//" > tmp01
+	cat ${file_start}_temp.tsv | awk -F'\t' '($3=="CDS" || $3=="gene" || $3=="tRNA" || $3=="tmRNA" || $3=="ncRNA" || $3=="rRNA") {print $1, $4, $5}' | tr " " "\t" > ${input}/tmp00
+	cat ${file_start}_temp.tsv | awk -F'\t' '($3=="CDS" || $3=="gene" || $3=="tRNA" || $3=="tmRNA" || $3=="ncRNA" || $3=="rRNA")' | awk -F'ID=' '{print $2}' | sed -e "s/;.*//" > ${input}/tmp01
 
-        paste tmp00 tmp01  > ${file_start}.bed
+        paste ${input}/tmp00 ${input}/tmp01  > ${file_start}.bed
 
         bedtools getfasta -fi ${file_start}.fasta -bed ${file_start}.bed -fo ${file_start}.ffn -name
         rm -f tmp00 tmp01 ${file_start}.bed ${file_start}_temp.tsv
@@ -180,38 +172,37 @@ split_gff(){
 
 
 # extracting ffn and scaffolds.fasta files from gff files
-for file in ./*.gff
+for file in ${input}/*.gff
 do
-	split_gff $file $
+	split_gff $file
 done
-
 wait
 
 # creating a file of all the genes and clustering it with cd-hit-est
-ALLGENES=output_results/all_genes_${NAME}
-ls *.ffn > output_results/sample_list.txt
+ALLGENES=${output}/output_results/all_genes_${NAME}
+ls ${input}/*.ffn > ${output}/output_results/sample_list.txt
+sed -i "s/.ffn//g" ${output}/output_results/sample_list.txt
 
-sed -i "s/.ffn//g" output_results/sample_list.txt
-
-cat *.ffn > ${ALLGENES}
-
+cat ${input}/*.ffn > ${ALLGENES}
+cat ${input}/*.ffn
 sed -i "s/ /_/g" ${ALLGENES}
 
-CLUSTERED=output_results/clustered_genes_${NAME}.ffn
+CLUSTERED=${output}/output_results/clustered_genes_${NAME}.ffn
 
 echo -en "-----CLUSTERING WITH CD-HIT-EST-----\n"
+echo cd-hit-est -i ${ALLGENES} -o ${CLUSTERED} -M 0 -G 0 -d 200 -T ${THREADS} -aS ${ALIGNMENT_COVERAGE} -c ${IDENTITY}
 
 cd-hit-est -i ${ALLGENES} -o ${CLUSTERED} -M 0 -G 0 -d 200 -T ${THREADS} -aS ${ALIGNMENT_COVERAGE} -c ${IDENTITY}
 
-rm -f output_results/all_genes_${NAME}
+rm -f ${output}/output_results/all_genes_${NAME}
 
 # blast each sequence to the clustered database
 
 echo -en "-----FINDING THE BEST ALIGNMENT FOR EACH GENE SEQUENCE-----\n"
-bash gene_db_alignment_against_seq.sh  ${NAME} ${geneCov1} ${geneCov2} ${geneIden1} ${geneIden2} ${THREADS}
+bash ${SCRIPT_DIR}/gene_db_alignment_against_seq.sh  ${NAME} ${geneCov1} ${geneCov2} ${geneIden1} ${geneIden2} ${THREADS} ${output} ${input}
 
 echo -en "-----CREATING GENE PRESENCE/ABSENCE MATRIX-----\n"
-bash convert_gene_alignment_to_binary.sh  ${NAME} ${geneCov1} ${geneCov2} ${geneIden1} ${geneIden2} ${geneLen}
+bash ${SCRIPT_DIR}/convert_gene_alignment_to_binary.sh  ${NAME} ${geneCov1} ${geneCov2} ${geneIden1} ${geneIden2} ${geneLen} ${output} ${input}
 
 echo -en "-----THE ANALYSIS IS DONE-----\n"
 
@@ -225,14 +216,14 @@ then
 		not_found RAxML
 	fi
 	echo -en "-----GENERATING THE PHYLOGENETIC TREE-----\n"
-	bash phylogenetic_analysis.sh ${NAME}
+	bash ${SCRIPT_DIR}/phylogenetic_analysis.sh ${NAME} ${output} ${input} ${THREADS}
 fi
 
 
 
 # remove temporary files
 
-bash remove_temp.sh ${NAME}
+bash ${SCRIPT_DIR}/remove_temp.sh ${NAME} ${input}
 
 
 
@@ -248,7 +239,7 @@ then
 	echo -en "-----PLOTTING GENE PRESENCE-ABSENCE HEATMAPS-----\n"
 	# generate the gene presence-absence matrix visualization for only gained/lost genes
 	heatmaps=`command -v generate_heatmaps.R`
-	Rscript $heatmaps ${NAME}
+	Rscript $heatmaps ${NAME} ${output}
 
 fi
 
