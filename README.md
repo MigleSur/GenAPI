@@ -12,6 +12,7 @@ Before running the program make sure that the following programs are installed a
 [BLAST >=2.6.0+](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) <br/>
 [CD-HIT >=4.6.1](http://weizhongli-lab.org/cd-hit/) <br/>
 [Bedtools >=2.26](http://bedtools.readthedocs.io/en/latest/) <br/>
+[More Utils](https://github.com/stigtsp/moreutils) <br/>
 <br/>
 Requirements for optional visualizations: <br/>
 Heatmaps: <br/>
@@ -44,7 +45,7 @@ genapi [options] [-n <analysis name>]
 
 ### Input
 
-Annotated contig/scaffold/genome GFF files of the chosen samples have to be placed in the directory from which the program is being run. GenAPI uses unique IDs from the GFF file as annotations, so it would be easy to trace back the gene of interest. 
+Annotated contig/scaffold/genome GFF files of the chosen samples ~~have to be placed in the directory from which the program is being run~~ can now be placed anywhere, as long as they're pointed out with --input! GenAPI uses unique IDs from the GFF file as annotations, so it would be easy to trace back the gene of interest. 
 
 ### Usage
 
@@ -70,14 +71,16 @@ Usage: genapi [options] [--name <analysis name>]
         -l, --geneLen   Minimum gene length. Shorter than the threshold genes are
                         excluded from the analysis.
                         Default: 150
-        -t, --tree      Create a phylogenetic tree using gene presence-absence
-                        matrix. Requires RAxML to be installed.
-                        Default: False
-        -m, --matrix    Create a gene presence-absence matrix visualization. Requires
-                        Rscript and pheatmap library to be installed.
-                        Default: False
-        
+	-t, --tree	Create a phylogenetic tree using gene presence-absence
+			matrix. Requires RAxML to be installed.
+			Default: False
+	-m, --matrix	Create a gene presence-absence matrix visualization. Requires
+			Rscript and pheatmap library to be installed.
+			Default: False
         -v, --version   Print the tool version.
+        -i, --input     Location of the input files
+        -o, --output    Location of the output files 
+
         -h, --help      Print this message.
 ```
 First minimum alignment length threshold and first minimum identity threshold are used as a pair. The same goes for the second pair. It is not advised to change those arguments unless there is a strong reason for doing that.
@@ -92,7 +95,7 @@ GenAPI does not take into account incomplete deletions in the genes. GenAPI was 
 
 ### Output
 
-All the output files are placed in output_results directory inside the directory in which the program is being run. <br/>
+All the output files are placed in output_results directory ~~inside the directory in which the program is being run~~ at the location the user specifies with --output. <br/>
 
 Output file name | Description
 ------------ | -------------
