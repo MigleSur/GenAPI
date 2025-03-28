@@ -152,7 +152,7 @@ remove_noid(){
 		while read line
 		do
 			echo $line
-			sed -i "/$line/d" ${tsv_file}
+			sed -i ":$line:d" ${tsv_file}
 		done < no_id.tsv
 	fi
 	rm -f no_id.tsv
